@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,31 +9,36 @@ import {
   Alert,
   Platform,
   KeyboardAvoidingView,
-} from "react-native"
+  Pressable,
+} from "react-native";
 
-import { useLLM, Message, LLAMA3_2_1B_SPINQUANT } from "react-native-executorch"
+import {
+  useLLM,
+  Message,
+  LLAMA3_2_1B_SPINQUANT,
+} from "react-native-executorch";
 
-import { styles } from "./styles"
+import { styles } from "./styles";
 
 export default function App() {
-  const [inputMessage, setInputMessage] = useState("")
+  const [inputMessage, setInputMessage] = useState("");
 
-  const llm = useLLM({ model: LLAMA3_2_1B_SPINQUANT })
+  const llm = useLLM({ model: LLAMA3_2_1B_SPINQUANT });
 
   async function handleSendMessage() {
-    if (!inputMessage.trim() || llm.isGenerating || !llm.isReady) return
+    if (!inputMessage.trim() || llm.isGenerating || !llm.isReady) return;
 
     try {
-      setInputMessage("")
-      await llm.sendMessage(inputMessage.trim())
+      setInputMessage("");
+      await llm.sendMessage(inputMessage.trim());
     } catch (error) {
-      console.error("Erro ao enviar mensagem:", error)
-      Alert.alert("Não foi possível enviar a mensagem. Tente novamente.")
+      console.error("Erro ao enviar mensagem:", error);
+      Alert.alert("Não foi possível enviar a mensagem. Tente novamente.");
     }
   }
 
   const renderMessage = useCallback((message: Message, index: number) => {
-    const isUser = message.role === "user"
+    const isUser = message.role === "user";
 
     return (
       <View
@@ -46,19 +51,20 @@ export default function App() {
         <Text style={styles.messageRole}>{isUser ? "Você" : "Assistente"}</Text>
         <Text style={[styles.messageText]}>{message.content}</Text>
       </View>
-    )
-  }, [])
+    );
+  }, []);
 
   useEffect(() => {
-    if (!llm.isReady) return
+    if (!llm.isReady) return;
 
     llm.configure({
       chatConfig: {
-        systemPrompt: "Você é um tutor universitário especialista em Ciência da Computação. Você ensina disciplinas de um curso de graduação e ajuda na resolução de problemas técnicos, teóricos e práticos. Seu foco é: explicação didática de conceitos, apoio em exercícios acadêmicos, auxílio em programação e depuração de código, preparação para provas e trabalhos. Sempre explique como se estivesse ensinando em sala de aula, use exemplos práticos e analogias quando necessário, mostre código quando aplicável, estruture respostas de forma lógica e progressiva e seja preciso tecnicamente. Se a pergunta envolver programação, priorize clareza e boas práticas. Responda sempre em português do Brasil.",
+        systemPrompt:
+          "Você é um tutor universitário especialista em Ciência da Computação. Você ensina disciplinas de um curso de graduação e ajuda na resolução de problemas técnicos, teóricos e práticos. Seu foco é: explicação didática de conceitos, apoio em exercícios acadêmicos, auxílio em programação e depuração de código, preparação para provas e trabalhos. Sempre explique como se estivesse ensinando em sala de aula, use exemplos práticos e analogias quando necessário, mostre código quando aplicável, estruture respostas de forma lógica e progressiva e seja preciso tecnicamente. Se a pergunta envolver programação, priorize clareza e boas práticas. Responda sempre em português do Brasil.",
         contextWindowLength: 4096,
       },
-    })
-  }, [llm.isReady])
+    });
+  }, [llm.isReady]);
 
   return (
     <KeyboardAvoidingView
@@ -94,7 +100,7 @@ export default function App() {
               </Text>
             ) : (
               llm.messageHistory.map((message, index) =>
-                renderMessage(message, index)
+                renderMessage(message, index),
               )
             )}
 
@@ -122,18 +128,28 @@ export default function App() {
 
             <View style={styles.buttonContainer}>
               <View style={styles.buttonWrapper}>
-                <Button
-                  title={llm.isGenerating ? "Gerando..." : "Enviar"}
+                <Pressable
+                  style={[
+                    styles.sendButton,
+                    (!inputMessage.trim() ||
+                      llm.isGenerating ||
+                      !llm.isReady) &&
+                      styles.sendButtonDisabled,
+                  ]}
                   onPress={handleSendMessage}
                   disabled={
                     !inputMessage.trim() || llm.isGenerating || !llm.isReady
                   }
-                />
+                >
+                  <Text style={styles.sendButtonText}>
+                    {llm.isGenerating ? "Gerando..." : "Enviar"}
+                  </Text>
+                </Pressable>
               </View>
             </View>
           </View>
         </>
       )}
     </KeyboardAvoidingView>
-  )
+  );
 }
