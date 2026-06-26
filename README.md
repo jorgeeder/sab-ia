@@ -190,32 +190,6 @@ ou
 ```bash
 yarn
 ```
-
-# Execução
-
-Antes de executar a aplicação nativamente, é necessário gerar os arquivos específicos das plataformas **Android** e **iOS** utilizando o Expo Prebuild.
-
-## Gerar arquivos nativos
-
-Execute:
-
-```bash
-npx expo prebuild
-```
-
-Esse comando cria automaticamente as pastas:
-
-```text
-android/
-ios/
-```
-
-a partir das configurações definidas no arquivo:
-
-```text
-app.json
-```
-
 ---
 
 ## Desenvolvimento
