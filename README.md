@@ -170,7 +170,7 @@ Antes de executar o projeto é necessário possuir:
 Clone o projeto:
 
 ```bash
-git clone <url-do-repositório>
+git clone https://github.com/jorgeeder/sab-ia
 ```
 
 Entre na pasta:
